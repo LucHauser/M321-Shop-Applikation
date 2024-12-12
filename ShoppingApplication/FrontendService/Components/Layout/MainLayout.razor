@@ -1,0 +1,29 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider @ref="themeProvider" IsDarkMode="true" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar>
+        Shop
+    </MudAppBar>
+    <MudDrawer Open="true">
+        <MudNavMenu>
+            <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+            <MudNavLink Href="/products" Match="NavLinkMatch.Prefix">Produkte</MudNavLink>
+            <MudNavLink Href="/auth" Match="NavLinkMatch.Prefix">Login & Regristrierung</MudNavLink>
+            <MudNavLink Href="/shopping-cart" Match="NavLinkMatch.Prefix">Warenkorb</MudNavLink>
+            <MudNavLink Href="/orders" Match="NavLinkMatch.Prefix">Bestellungen</MudNavLink>
+            
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private MudThemeProvider themeProvider;
+}
