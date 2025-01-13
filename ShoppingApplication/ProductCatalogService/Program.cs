@@ -1,44 +1,50 @@
+using ProductCatalogService.Models;
+using Steeltoe.Discovery.Client;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddDiscoveryClient(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
-//var summaries = new[]
-//{
-//    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-//};
+List<Product>? testProductBacklog = new List<Product>
+{
+    new Product { Id = 1, Name = "Product 1", Price = 99.99f },
+    new Product { Id = 2, Name = "Product 2", Price = 149.99f },
+    new Product { Id = 3, Name = "Product 3", Price = 199.99f }
+};
 
-//app.MapGet("/weatherforecast", () =>
-//{
-//    var forecast = Enumerable.Range(1, 5).Select(index =>
-//        new WeatherForecast
-//        (
-//            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-//            Random.Shared.Next(-20, 55),
-//            summaries[Random.Shared.Next(summaries.Length)]
-//        ))
-//        .ToArray();
-//    return forecast;
-//})
-//.WithName("GetWeatherForecast")
-//.WithOpenApi();
+// Define minimal API routes.
+app.MapGet("/api/products", () =>
+{
+    return testProductBacklog;
+})
+.WithName("GetAllProducts")
+.WithOpenApi();
+
+app.MapGet("/api/products/{id}", (int id) =>
+{
+    Product? product = testProductBacklog.FirstOrDefault(p => p.Id == id);
+
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(product);
+})
+.WithName("GetProductById")
+.WithOpenApi();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
