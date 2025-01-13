@@ -1,16 +1,20 @@
 using ProductCatalogService.Models;
+using ProductCatalogService.DatabaseAccess;
 using Steeltoe.Discovery.Client;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddDiscoveryClient(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<ProductDbContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("Default"),
+    new MySqlServerVersion(new Version(8, 0, 21))));
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,26 +22,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
-List<Product>? testProductBacklog = new List<Product>
+app.MapGet("/api/products", async (ProductDbContext db) =>
 {
-    new Product { Id = 1, Name = "Product 1", Price = 99.99f },
-    new Product { Id = 2, Name = "Product 2", Price = 149.99f },
-    new Product { Id = 3, Name = "Product 3", Price = 199.99f }
-};
-
-// Define minimal API routes.
-app.MapGet("/api/products", () =>
-{
-    return testProductBacklog;
+    return await db.Products.ToListAsync();
 })
 .WithName("GetAllProducts")
 .WithOpenApi();
 
-app.MapGet("/api/products/{id}", (int id) =>
+app.MapGet("/api/products/{id}", async (int id, ProductDbContext db) =>
 {
-    Product? product = testProductBacklog.FirstOrDefault(p => p.Id == id);
-
+    var product = await db.Products.FindAsync(id);
     if (product == null)
     {
         return Results.NotFound();
@@ -45,6 +41,49 @@ app.MapGet("/api/products/{id}", (int id) =>
     return Results.Ok(product);
 })
 .WithName("GetProductById")
+.WithOpenApi();
+
+app.MapPost("/api/products", async (Product product, ProductDbContext db) =>
+{
+    db.Products.Add(product);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/products/{product.Id}", product);
+})
+.WithName("AddProduct")
+.WithOpenApi();
+
+app.MapPut("/api/products/{id}", async (int id, Product updatedProduct, ProductDbContext db) =>
+{
+    var product = await db.Products.FindAsync(id);
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
+
+    product.Name = updatedProduct.Name;
+    product.Description = updatedProduct.Description;
+    product.Price = updatedProduct.Price;
+    product.Stock = updatedProduct.Stock;
+
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+})
+.WithName("UpdateProduct")
+.WithOpenApi();
+
+app.MapDelete("/api/products/{id}", async (int id, ProductDbContext db) =>
+{
+    var product = await db.Products.FindAsync(id);
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
+
+    db.Products.Remove(product);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+})
+.WithName("DeleteProduct")
 .WithOpenApi();
 
 app.Run();

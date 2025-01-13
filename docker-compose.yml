@@ -1,0 +1,15 @@
+services:
+  product-catalog-db:
+    image: mysql:8.0.21
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: ProductCatalog
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./initdb/ProductCatalog/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # eureka-server:
+  #   image: steeltoeoss/eureka-server
+  #   ports:
+  #     - "8761:8761"
