@@ -9,7 +9,7 @@ services:
     volumes:
       - ./initdb/ProductCatalog/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  # eureka-server:
-  #   image: steeltoeoss/eureka-server
-  #   ports:
-  #     - "8761:8761"
+  eureka-server:
+    image: steeltoeoss/eureka-server
+    ports:
+      - "8761:8761"
