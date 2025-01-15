@@ -5,6 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+});
+
 builder.Services.AddDiscoveryClient(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -24,27 +29,46 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.MapPost("/api/orders", async (OrderDbContext db, Order order) =>
+// POST /api/orders
+app.MapPost("/api/orders", async (OrderDbContext dbContext, Order order) =>
 {
-    db.Orders.Add(order);
-    await db.SaveChangesAsync();
+    dbContext.Orders.Add(order);
+    await dbContext.SaveChangesAsync();
+
     return Results.Created($"/api/orders/{order.OrderId}", order);
 });
 
-app.MapGet("/api/orders/{id}", async (OrderDbContext db, int id) =>
+// GET /api/orders/{id}
+app.MapGet("/api/orders/{id}", async (OrderDbContext dbContext, int id) =>
 {
-    var order = await db.Orders.Include(o => o.OrderItems).FirstOrDefaultAsync(o => o.OrderId == id);
-    return order is not null ? Results.Ok(order) : Results.NotFound();
+    var order = await dbContext.Orders.Include(o => o.OrderItems).FirstOrDefaultAsync(o => o.OrderId == id);
+    if (order == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(order);
 });
 
-app.MapPut("/api/orders/{id}", async (OrderDbContext db, int id, Order updatedOrder) =>
+// PUT /api/orders/{id}
+app.MapPut("/api/orders/{id}", async (OrderDbContext dbContext, int id, string status) =>
 {
-    var order = await db.Orders.FindAsync(id);
-    if (order is null) return Results.NotFound();
+    var order = await dbContext.Orders.FindAsync(id);
+    if (order == null)
+    {
+        return Results.NotFound();
+    }
 
-    order.Status = updatedOrder.Status;
-    await db.SaveChangesAsync();
+    order.Status = status;
+    await dbContext.SaveChangesAsync();
+
     return Results.NoContent();
 });
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+    dbContext.Database.EnsureCreated();
+}
 
 app.Run();
