@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductCatalogService", "ProductCatalogService\ProductCatalogService.csproj", "{8D04B1D6-E06B-4518-A6B4-32C7F90B2EA9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingCartService", "ShoppingCartService\ShoppingCartService.csproj", "{0BCE8860-3DA4-49D7-83E5-20EF0006CB84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8D04B1D6-E06B-4518-A6B4-32C7F90B2EA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D04B1D6-E06B-4518-A6B4-32C7F90B2EA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D04B1D6-E06B-4518-A6B4-32C7F90B2EA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BCE8860-3DA4-49D7-83E5-20EF0006CB84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BCE8860-3DA4-49D7-83E5-20EF0006CB84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BCE8860-3DA4-49D7-83E5-20EF0006CB84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BCE8860-3DA4-49D7-83E5-20EF0006CB84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

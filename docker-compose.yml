@@ -8,7 +8,15 @@ services:
       - "3306:3306"
     volumes:
       - ./initdb/ProductCatalog/init.sql:/docker-entrypoint-initdb.d/init.sql
-
+  order-db:
+    image: mysql:8.0.21
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: Order
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./initdb/Order/init.sql:/docker-entrypoint-initdb.d/init.sql
   eureka-server:
     image: steeltoeoss/eureka-server
     ports:
