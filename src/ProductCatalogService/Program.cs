@@ -10,8 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ProductDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("Default"),
-    new MySqlServerVersion(new Version(8, 0, 21))));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 var app = builder.Build();
 
