@@ -28,7 +28,7 @@ Nach all diesen Schritten funktionierte das Registrieren immer noch nicht. Wesha
 Da ich in die Fehlerbehebung sehr viel Zeit investiere, habe ich mich dazu entschieden das API-Gateway anhand der Dokumentation umzusetzen, ohne es testen zu können. Hierfür habe ich mir die Dokumentation zu Ocelot angeschaut und wie man mit diesem dynamisch aus der Service Regsistry die Ports der anderen Services herausfinden kann. So sollte es nun möglich sein die URL des API-Gateways /products aufzurufen, was die Anfrage automatisch zu einem Produktkatalog-Service weiterleitet und man somit die Produkte von diesem erhält. Ich habe es interessant gefunden, dass Ocelot die Konfiguration in einem einzigen JSON-File festlegt. Zum Schluss habe ich noch den Bestell-Service fertig.
 
 ## KW 4
-Da in den Vorgaben für das Projekt steht, dass die wichtigsten Mechanismen umgesetzt sein sollten, habe ich mich dazu entschieden das Cirquit-Breaker-Pattern in dem API-Gateway hinzuzufügen. Natürlich weiss ich nicht, ob die Implementierung wirklich funktionieren würde.  Soweit ich es verstanden habe müssen nur die folgenden Zeilen im ocelot.json hinzugefügt werden um das Cirquit-Breaker-Pattern zu konfigurieren.
+Ich habe noch weiter versucht den Fehler zu beheben, habe jedoch im Internet nichts gefunden das mir weiter hilft. Da in den Vorgaben für das Projekt steht, dass die wichtigsten Mechanismen umgesetzt sein sollten, habe ich mich dazu entschieden das Cirquit-Breaker-Pattern in dem API-Gateway hinzuzufügen. Natürlich weiss ich nicht, ob die Implementierung wirklich funktionieren würde.  Soweit ich es verstanden habe müssen nur die folgenden Zeilen im ocelot.json hinzugefügt werden um das Cirquit-Breaker-Pattern zu konfigurieren.
 
 ```json
 "QoSOptions": {
@@ -47,5 +47,12 @@ Um dieses Pattern festzulegen muss das Package Ocelot.Provider.Polly installiert
 Im folgenden Abschnitt beschreibe ich wie der Kundenverwaltungs-Service aussehen müsste, um für eine sicheren Shop zu sorgen.
 Denn Warenkorb habe ich nur in der Projektdefinition beschrieben, da dieser keine spezilene Eigenschaften hat.
 
-Kundenverwaltungs-Service in der Theorie. Der Service müsste bei der Registrierung den Benutzernahmen und das Passwort als Hash abspeichern. Beim Login würde überprüft ob der Benutzername und der Hash in der Datenbank existieren. Ist dies der Fall wird ein JWT generiert und zurückgegeben. Das JWT müsste eine UserId enthalten. Wenn beispielsweise der der Warenkorb-Service aufgerufen wird, müsste dieser in der Datenbank auch die UserId enthalten, so dass anhand des JWts überprüft werden kann, ob es sich um den richtigen User handelt.
+Kundenverwaltungs-Service in der Theorie. Der Service müsste bei der Registrierung den Benutzernahmen und das Passwort als Hash abspeichern. Beim Login würde überprüft ob der Benutzername und der Hash in der Datenbank existieren. Ist dies der Fall wird ein JWT generiert und zurückgegeben. Das JWT müsste eine UserId enthalten. 
+Wenn beispielsweise der der Warenkorb-Service aufgerufen wird, müsste dieser in der Datenbank auch die UserId enthalten, so dass anhand des JWts überprüft nur die Daten des Benutzers zurückgegeben werden. Diese Art von  Überprüfung müsste auch beim Bestellungsservice umgesetzt werden. Dies hatte ich zum Zeitpunkt der Erstellung der Projektdefinition noch nicht beachtet. Weshalb ich dies nun hier dokumentiere.
 
+Nun am Ende meiner Arbeit können die folgenden Services gestartet werden:
+- Produktkatalog Service (Service Registrierung funktioniert nicht): Port 5000
+- Bestellungsservice (Service Registrieren funktionieren nicht): Port 5600
+- Frontend (Zeigt keine Daten an)
+
+Zeitlich hat es mir leider nicht gereicht noch weitere Services umzusetzten.
